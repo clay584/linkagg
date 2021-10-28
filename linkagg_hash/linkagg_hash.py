@@ -21,7 +21,7 @@ class Protocol(Enum):
     OSPF = 89
 
 
-class Flow:
+class Frame:
     def __init__(self):
         self.proto = self.gen_proto()
         if self.proto in [Protocol.TCP, Protocol.UDP]:  # TCP or UDP
@@ -32,9 +32,9 @@ class Flow:
             self.dst_ip = self.gen_ip()
             self.dst_port = self.gen_port()
         elif self.proto == Protocol.OSPF:  # OSPF
-            self.src_mac = "aabbcc000420"
+            self.src_mac = self.gen_mac()
             self.dst_mac = "01005e000005"
-            self.src_ip = "10.3.4.4"
+            self.src_ip = self.gen_ip()
             self.dst_ip = "224.0.0.5"
             self.src_port = None
             self.dst_port = None
@@ -47,10 +47,10 @@ class Flow:
             self.dst_port = None
 
     def __str__(self):
-        return str(self.flow_tuple())
+        return str(self.frame_tuple())
 
     def __repr__(self):
-        return str(self.flow_tuple())
+        return str(self.frame_tuple())
 
     @staticmethod
     def gen_ip():
@@ -77,7 +77,7 @@ class Flow:
         protos = (1, 6, 17, 89)  # ICMP, TCP, UDP, OSPF respectively
         return Protocol(protos[random.randint(0, 3)])
 
-    def flow_tuple(self):
+    def frame_tuple(self):
         return (
             self.src_mac,
             self.dst_mac,
@@ -89,43 +89,113 @@ class Flow:
         )
 
 
-def gen_flows(c):
-    return [Flow() for _ in range(c)]
+def gen_frames(c):
+    return [Frame() for _ in range(c)]
 
 
-def hash_src_dst_ip(flow: Flow):
-    src_ip = flow.src_ip
-    dst_ip = flow.dst_ip
-    # Take the last four (least significant) bits from src and dst and concatenate
-    src_bin = bin(int(src_ip))[-4:]
-    dst_bin = bin(int(dst_ip))[-4:]
+def hash_src_dst_ip(frame: Frame):
+    """Hash function for source ip and dest ip
+
+    Args:
+        frame (Frame): Network Frame object
+
+    Returns:
+        int: Returns integer between 1 and 256
+    """
+    src_ip = frame.src_ip
+    dst_ip = frame.dst_ip
+    # Strip '0b' from the front of these binary representations, and then
+    # take the last n (least significant) bits and concatenate
+    src_bin = bin(int(src_ip))[2:][-4:]
+    dst_bin = bin(int(dst_ip))[2:][-4:]
     hash_bin = src_bin + dst_bin
     # convert to an integer from binary, and lets bump it up by one to start
     # like interface numbering. We don't start with interface 0, we start from 1.
     return int(hash_bin, base=2) + 1
 
 
-def hash_src_dst_port_proto():
-    return random.randint(1, 256)
+def hash_src_dst_port_proto(frame: Frame):
+    """Hash function for source port, dest port, and protocol
+
+    Args:
+        frame (Frame): Network Frame object
+
+    Returns:
+        int: Returns integer between 1 and 256
+    """
+    src_port = frame.src_port
+    dst_port = frame.dst_port
+    proto_num = frame.proto.value
+    # Strip '0b' from the front of these binary representations, and then
+    # take the last n (least significant) bits and concatenate
+    bin(int(frame.dst_mac, 16))[2:].zfill(16)
+    src_bin = bin(int(src_port))[2:].zfill(10)
+    dst_bin = bin(int(dst_port))[2:].zfill(10)
+    proto_bin = bin(int(proto_num))[2:].zfill(10)[-4:]
+    hash_bin = src_bin + dst_bin + proto_bin
+    # convert to an integer from binary, and lets bump it up by one to start
+    # like interface numbering. We don't start with interface 0, we start from 1.
+    return int(hash_bin, base=2) + 1
 
 
-def hash_src_dst_mac():
-    return random.randint(1, 256)
+def hash_src_dst_mac(frame: Frame):
+    """Hash function for source mac address and destination mac address.
+
+    Args:
+        frame (Frame): Network Frame object
+
+    Returns:
+        int: Returns integer between 1 and 256
+    """
+    # convert to binary, strip '0b', and zero-pad
+    src_mac = bin(int(frame.src_mac, 16))[2:].zfill(16)
+    dst_mac = bin(int(frame.dst_mac, 16))[2:].zfill(16)
+    # take the last n (least significant) bits and concatenate
+    src_bin = bin(int(src_mac))[::2][-4:]
+    dst_bin = bin(int(dst_mac))[::2][-4:]
+    hash_bin = src_bin + dst_bin
+    # convert to an integer from binary, and lets bump it up by one to start
+    # like interface numbering. We don't start with interface 0, we start from 1.
+    return int(hash_bin, base=2) + 1
 
 
-def hash_main(flow):
-    if flow.proto == Protocol.ICMP:
+def hash_main(frame):
+    """Main hashing parent function. Depending on the higher level packet
+    content, will decide which actual hash function will be executed.
+
+    Args:
+        frame (Frame): Network Frame object
+
+    Returns:
+        int: Returns integer between 1 and 256
+    """
+    if frame.proto == Protocol.ICMP:
         # src_ip,dst_ip
-        return hash_src_dst_ip(flow)
-    elif flow.proto in [Protocol.TCP, Protocol.UDP]:
+        return hash_src_dst_ip(frame)
+    elif frame.proto in [Protocol.TCP, Protocol.UDP]:
         # src_port,dst_port,proto
-        return hash_src_dst_port_proto()
+        return hash_src_dst_port_proto(frame)
     else:
         # src_mac,dst_mac
-        return hash_src_dst_mac()
+        return hash_src_dst_mac(frame)
 
 
 def egress_intf_picker(number_of_up_intfs, max_supported_intfs, hash_value):
+    """Function that uses the resulting frame hash and computes which up
+    interface queue the frame will be put in. The system as a whole should then
+    map these queues to actual egress interfaces.
+
+    Args:
+        number_of_up_intfs (int): Number of operational interfaces in the bundle
+        max_supported_intfs (int): Maximum number of interfaces that can be supported in a bundle
+        hash_value (int): Resulting frame hash from the hashing process
+
+    Raises:
+        NoAvailableInterfaces: If there are no available interfaces in the bundle, just raise an exception
+
+    Returns:
+        int: Egress queue to dump the frame into. This will be picked up by an egress interface in the bundle
+    """
     # calculate windows for what hashes go into which egress interface "bucket"
     # short-circuit if no interfaces are up
     if number_of_up_intfs == 0:
@@ -147,22 +217,48 @@ def egress_intf_picker(number_of_up_intfs, max_supported_intfs, hash_value):
 if __name__ == "__main__":
     num_supported = int(sys.argv[1])
     num_up_links = int(sys.argv[2])
-    num_flows = int(sys.argv[3])
+    num_frames = int(sys.argv[3])
 
-    flows = gen_flows(num_flows)
+    frames = gen_frames(num_frames)
     interface_queues = {i: [] for i in range(1, num_up_links + 1)}
-    for flow in flows:
-        resulting_hash = hash_main(flow)
+
+    # Run a lot of frames into the system
+    for frame in frames:
+        resulting_hash = hash_main(frame)
         picked_interface = egress_intf_picker(
             num_up_links, num_supported, resulting_hash
         )
-        interface_queues[picked_interface].append(flow.flow_tuple())
+        interface_queues[picked_interface].append(frame.frame_tuple())
         # print("-" * 50)
-        # print(f"flow: {flow}")
+        # print(f"frame: {frame}")
         # print(f"resulting_hash: {resulting_hash}")
         # print(f"picked_interface: {picked_interface}")
 
+    # print queues
     print("=" * 50)
     for k, v in interface_queues.items():
-        print(f"Interface {k}: {len(v)} flows")
+        print(f"Interface {k}: {len(v)} frames")
+    print("=" * 50)
+
+    # Lets simulate lots of frames for certain flows. This is normal in networking.
+    # A flow has thousands of frames...not just one. This will show the
+    # behavior of load-balancing flows does not necessarily ensure uniform interface
+    # utilization in a bundle. We will set 2 flows to be elephant flows.
+    more_frames = []
+    for _ in range(2):
+        selected_frame = random.choice(frames)
+        for _ in range(10000):
+            more_frames.append(selected_frame)
+
+    for frame in more_frames:
+        resulting_hash = hash_main(frame)
+        picked_interface = egress_intf_picker(
+            num_up_links, num_supported, resulting_hash
+        )
+        interface_queues[picked_interface].append(frame.frame_tuple())
+
+    # print queues again
+    print("=" * 50)
+    for k, v in interface_queues.items():
+        print(f"Interface {k}: {len(v)} frames")
     print("=" * 50)
