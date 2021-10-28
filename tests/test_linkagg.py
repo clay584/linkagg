@@ -10,11 +10,11 @@ def test_version():
 
 @pytest.fixture
 def frames():
-    return linkagg_hash.gen_frames(10)
+    return linkagg_hash.gen_frames(100)
 
 
 def test_frames(frames):
-    assert len(frames) == 10
+    assert len(frames) == 100
 
 
 def test_one_intf(frames):
@@ -50,3 +50,10 @@ def test_link_distribution():
     # this is not a great measurement of uniform distribution, but its
     # good enough for this toy code
     assert 10 < statistics.stdev(values) < 100
+
+
+def test_hashes_are_deterministic(frames):
+    for frame in frames:
+        last_hash = linkagg_hash.hash_main(frame)
+        for _ in range(10):
+            assert linkagg_hash.hash_main(frame) == last_hash
