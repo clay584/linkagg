@@ -1,0 +1,4 @@
+black
+pytest
+bandit
+flake8
