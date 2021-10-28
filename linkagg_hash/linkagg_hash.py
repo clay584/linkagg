@@ -215,9 +215,9 @@ def egress_intf_picker(number_of_up_intfs, max_supported_intfs, hash_value):
 
 
 if __name__ == "__main__":
-    num_supported = int(sys.argv[1])
-    num_up_links = int(sys.argv[2])
-    num_frames = int(sys.argv[3])
+    num_supported = 256  # number of interfaces supported in a bundle
+    num_up_links = int(sys.argv[1])  # number of active links in the bundle
+    num_frames = int(sys.argv[2])  # number of frames to generate
 
     frames = gen_frames(num_frames)
     interface_queues = {i: [] for i in range(1, num_up_links + 1)}
@@ -235,6 +235,7 @@ if __name__ == "__main__":
         # print(f"picked_interface: {picked_interface}")
 
     # print queues
+    print("One frame for every flow only. We should see a uniform distribution")
     print("=" * 50)
     for k, v in interface_queues.items():
         print(f"Interface {k}: {len(v)} frames")
@@ -258,6 +259,10 @@ if __name__ == "__main__":
         interface_queues[picked_interface].append(frame.frame_tuple())
 
     # print queues again
+    print()
+    print(
+        "Now lets see it with two elephant flows. Sometimes those will hit the same interface"
+    )
     print("=" * 50)
     for k, v in interface_queues.items():
         print(f"Interface {k}: {len(v)} frames")
