@@ -1,5 +1,7 @@
 # linkagg-hash
-Example implementation of link agreggation hashing algorithm
+Example implementation of link agreggation hashing algorithm. This is in response
+to Christopher Hart's ([@_ChrisJHart](https://twitter.com/_ChrisJHart)) post [here](https://twitter.com/_ChrisJHart/status/1452343071484653578). This is by no means exhaustive or bug-free, it's just a fun
+side-project to explore hashing algorithms and Ethernet link load-balancing.
 
 
 ## Installation
