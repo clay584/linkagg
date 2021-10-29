@@ -6,11 +6,15 @@ side-project to explore hashing algorithms and Ethernet link load-balancing.
 
 ## Installation
 
-Download the repo and cd into the directory: `git clone https://github.com/clay584/linkagg-hash.git && cd linkagg`
+Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg-hash.git && cd linkagg`
 
 ## Usage
 
-Run `./linkagg_hash/linkagg_hash.py <number_of_active_links> <num_of_unique_flows_to_generate>`
+`./demo.py <number_of_active_links> <num_of_unique_flows_to_generate>`
+
+OR
+
+`python -m linkagg <number_of_active_links> <num_of_unique_flows_to_generate>`
 
 ## Example Output
 
@@ -48,6 +52,10 @@ Interface 8: 1290 frames
 
 How can we ensure we get it right? With tests of course! (I'm not saying there are
 no bugs. I'm sure there are bugs.)
+
+First, install the dev requirements: `pip install -r requirements-dev.txt`
+
+Run `pytest -v`
 
 ```shell
 ❯ pytest -v
