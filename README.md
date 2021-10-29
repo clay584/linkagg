@@ -6,7 +6,7 @@ side-project to explore hashing algorithms and Ethernet link load-balancing.
 
 ## Installation
 
-Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg-hash.git && cd linkagg`
+Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg.git && cd linkagg`
 
 ## Usage
 
