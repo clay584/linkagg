@@ -1,12 +1,12 @@
-# linkagg-hash
+# linkagg
+
 Example implementation of link agreggation hashing algorithm. This is in response
 to Christopher Hart's ([@_ChrisJHart](https://twitter.com/_ChrisJHart)) post [here](https://twitter.com/_ChrisJHart/status/1452343071484653578). This is by no means exhaustive or bug-free, it's just a fun
 side-project to explore hashing algorithms and Ethernet link load-balancing.
 
-
 ## Installation
 
-Create a virtual environment, and install requirements with `pip install -r requirements-dev.txt`.
+Download the repo and cd into the directory: `git clone https://github.com/clay584/linkagg-hash.git && cd linkagg`
 
 ## Usage
 
@@ -16,7 +16,7 @@ Run `./linkagg_hash/linkagg_hash.py <number_of_active_links> <num_of_unique_flow
 
 Running 10,000 frames through with an eight interface bundle.
 
-```
+```shell
 > python linkagg_hash/linkagg_hash.py 8 10000
 
 One frame for every flow only. We should see a uniform distribution
@@ -49,7 +49,7 @@ Interface 8: 1290 frames
 How can we ensure we get it right? With tests of course! (I'm not saying there are
 no bugs. I'm sure there are bugs.)
 
-```
+```shell
 ❯ pytest -v
 =========================== test session starts ===========================
 platform linux -- Python 3.9.7, pytest-6.2.5, py-1.10.0,

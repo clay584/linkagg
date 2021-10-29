@@ -1,6 +1,7 @@
 import pytest
-from linkagg_hash import linkagg_hash
-from linkagg_hash import __version__
+from linkagg import __version__
+from linkagg.utils import gen_frames, egress_intf_picker
+from linkagg.hashing import hash_main
 import statistics
 
 
@@ -10,7 +11,7 @@ def test_version():
 
 @pytest.fixture
 def frames():
-    return linkagg_hash.gen_frames(100)
+    return gen_frames(100)
 
 
 def test_frames(frames):
@@ -21,10 +22,8 @@ def test_one_intf(frames):
     num_supported = 256
     num_up_links = 1
     for frame in frames:
-        resulting_hash = linkagg_hash.hash_main(frame)
-        picked_intf = linkagg_hash.egress_intf_picker(
-            num_up_links, num_supported, resulting_hash
-        )
+        resulting_hash = hash_main(frame)
+        picked_intf = egress_intf_picker(num_up_links, num_supported, resulting_hash)
         assert picked_intf == 1
 
 
@@ -32,11 +31,11 @@ def test_link_distribution():
     num_supported = 256
     num_up_links = 64
     num_frames = 10000
-    frames = linkagg_hash.gen_frames(num_frames)
+    frames = gen_frames(num_frames)
     interface_queues = {i: 0 for i in range(1, num_up_links + 1)}
     for frame in frames:
-        resulting_hash = linkagg_hash.hash_main(frame)
-        picked_interface = linkagg_hash.egress_intf_picker(
+        resulting_hash = hash_main(frame)
+        picked_interface = egress_intf_picker(
             num_up_links, num_supported, resulting_hash
         )
         interface_queues[picked_interface] += 1
@@ -54,6 +53,6 @@ def test_link_distribution():
 
 def test_hashes_are_deterministic(frames):
     for frame in frames:
-        last_hash = linkagg_hash.hash_main(frame)
+        last_hash = hash_main(frame)
         for _ in range(10):
-            assert linkagg_hash.hash_main(frame) == last_hash
+            assert hash_main(frame) == last_hash
