@@ -29,7 +29,7 @@ def hash_src_dst_ip(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     cdef long src_ip, dst_ip
     cdef int proto, keep
@@ -49,7 +49,7 @@ def hash_src_dst_port_proto(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
 
     cdef long src_ip, dst_ip, src_mac, dst_mac
@@ -78,7 +78,7 @@ def hash_src_dst_mac(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     cdef long src_mac, dst_mac
     cdef int keep
@@ -99,7 +99,7 @@ def hash_main(frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     if frame.proto == Protocol.ICMP:
         # src_ip,dst_ip
