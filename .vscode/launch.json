@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Module",
+            "type": "python",
+            "request": "launch",
+            "module": "linkagg",
+            "args": [
+                "8",
+                "1000"
+            ]
+        },
+        {
             "name": "pytest",
             "type": "python",
             "request": "launch",
@@ -13,16 +23,5 @@
                 "-v"
             ]
         },
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "args": [
-                "8",
-                "1000"
-            ],
-            "console": "integratedTerminal"
-        }
     ]
 }
