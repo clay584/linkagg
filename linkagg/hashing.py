@@ -26,7 +26,7 @@ def hash_src_dst_ip(frame: Frame):
     Args:
         frame (Frame): Network Frame object
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     src_ip = frame.src_ip
     dst_ip = frame.dst_ip
@@ -47,7 +47,7 @@ def hash_src_dst_port_proto(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     src_port = frame.src_port
     dst_port = frame.dst_port
@@ -68,7 +68,7 @@ def hash_src_dst_mac(frame: Frame):
     Args:
         frame (Frame): Network Frame object
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     # convert to binary, strip '0b', and zero-pad
     src_mac = bin(int(frame.src_mac, 16))[2:].zfill(16)
@@ -91,7 +91,7 @@ def hash_main(frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     if frame.proto == Protocol.ICMP:
         # src_ip,dst_ip
