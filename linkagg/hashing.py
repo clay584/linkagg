@@ -23,10 +23,8 @@ def timeit(my_func):
 
 def hash_src_dst_ip(frame: Frame):
     """Hash function for source ip and dest ip
-
     Args:
         frame (Frame): Network Frame object
-
     Returns:
         int: Returns integer between 1 and 256
     """
@@ -39,11 +37,11 @@ def hash_src_dst_ip(frame: Frame):
     hash_bin = src_bin + dst_bin
     # convert to an integer from binary, and lets bump it up by one to start
     # like interface numbering. We don't start with interface 0, we start from 1.
-    return int(hash_bin, base=2) + 1
+    return int(hash_bin, base=2)
 
 
 def hash_src_dst_port_proto(frame: Frame):
-    """Hash function for source port, dest port, and protocol
+    """Hash function for source ip, source port, dest ip, dest port, and protocol
 
     Args:
         frame (Frame): Network Frame object
@@ -56,13 +54,13 @@ def hash_src_dst_port_proto(frame: Frame):
     proto_num = frame.proto.value
     # Strip '0b' from the front of these binary representations, and then
     # take the last n (least significant) bits and concatenate
-    src_bin = bin(int(src_port))[2:].zfill(10)
-    dst_bin = bin(int(dst_port))[2:].zfill(10)
+    src_bin = bin(int(src_port))[2:].zfill(10)[-2:]
+    dst_bin = bin(int(dst_port))[2:].zfill(10)[-2:]
     proto_bin = bin(int(proto_num))[2:].zfill(10)[-4:]
     hash_bin = src_bin + dst_bin + proto_bin
     # convert to an integer from binary, and lets bump it up by one to start
     # like interface numbering. We don't start with interface 0, we start from 1.
-    return int(hash_bin, base=2) + 1
+    return int(hash_bin, base=2)
 
 
 def hash_src_dst_mac(frame: Frame):
@@ -81,7 +79,7 @@ def hash_src_dst_mac(frame: Frame):
     hash_bin = src_bin + dst_bin
     # convert to an integer from binary, and lets bump it up by one to start
     # like interface numbering. We don't start with interface 0, we start from 1.
-    return int(hash_bin, base=2) + 1
+    return int(hash_bin, base=2)
 
 
 @timeit

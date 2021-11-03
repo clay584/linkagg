@@ -36,15 +36,12 @@ def egress_intf_picker(number_of_up_intfs, max_supported_intfs, hash_value):
     # short-circuit if no interfaces are up
     if number_of_up_intfs == 0:
         raise NoAvailableInterfaces(
-            "There are currently no up egres interfaces in the bundle"
+            "There are currently no up egress interfaces in the bundle"
         )
     window_width = max_supported_intfs // number_of_up_intfs
     for i in range(number_of_up_intfs):
         idx = i + 1
         lower = window_width * (idx - 1)
         upper = window_width * idx
-        if lower < hash_value <= upper:
+        if lower <= hash_value < upper:
             return idx
-
-    # failsafe, we must always pick an interface
-    return random.randint(1, number_of_up_intfs)
