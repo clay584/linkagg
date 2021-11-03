@@ -7,11 +7,12 @@ side-project to explore hashing algorithms and Ethernet link load-balancing.
 ## Installation
 
 1. Make sure you have gcc installed (Ubuntu): `sudo apt update && sudo apt install build-essential`
-2. Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg.git && cd linkagg`
-3. Create a Python virtual environment: `python -m venv venv`
-4. Activate the Python virtual environment: `source venv/bin/activate`
-5. Install the Python dependencies: `pip install -r requirements-dev.txt`
-6. Compile the cythonized code: `python setup.py build_ext --inplace`
+2. Make sure you have Python 3.9.7 installed: [Pyenv](https://github.com/pyenv/pyenv#installation)
+3. Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg.git && cd linkagg`
+4. Create a Python virtual environment: `python -m venv venv`
+5. Activate the Python virtual environment: `source venv/bin/activate`
+6. Install the Python dependencies: `pip install -r requirements-dev.txt`
+7. Compile the cythonized code: `python setup.py build_ext --inplace`
 
 ## Usage
 
@@ -26,31 +27,31 @@ OR
 Running 10,000 frames through with an eight interface bundle.
 
 ```shell
-> python linkagg_hash/linkagg_hash.py 8 10000
-
+❯ ./demo.py 8 8000
 One frame for every flow only. We should see a uniform distribution
 ==================================================
-Interface 1: 1263 frames
-Interface 2: 1217 frames
-Interface 3: 1277 frames
-Interface 4: 1219 frames
-Interface 5: 1216 frames
-Interface 6: 1283 frames
-Interface 7: 1235 frames
-Interface 8: 1290 frames
+Egress Queue 1: 984 frames
+Egress Queue 2: 978 frames
+Egress Queue 3: 1025 frames
+Egress Queue 4: 980 frames
+Egress Queue 5: 1015 frames
+Egress Queue 6: 1065 frames
+Egress Queue 7: 988 frames
+Egress Queue 8: 965 frames
 ==================================================
 
 Now lets see it with two elephant flows. Sometimes those will hit the same interface
 ==================================================
-Interface 1: 1263 frames
-Interface 2: 11217 frames
-Interface 3: 11277 frames
-Interface 4: 1219 frames
-Interface 5: 1216 frames
-Interface 6: 1283 frames
-Interface 7: 1235 frames
-Interface 8: 1290 frames
+Egress Queue 1: 984 frames
+Egress Queue 2: 978 frames
+Egress Queue 3: 11025 frames
+Egress Queue 4: 980 frames
+Egress Queue 5: 1015 frames
+Egress Queue 6: 1065 frames
+Egress Queue 7: 988 frames
+Egress Queue 8: 10965 frames
 ==================================================
+Total hashing time: 32.13191032409668 ms
 ```
 
 ## Tests
