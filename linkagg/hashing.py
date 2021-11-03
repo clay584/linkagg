@@ -68,22 +68,21 @@ def hash_src_dst_port_proto(frame: Frame):
 
 def hash_src_dst_mac(frame: Frame):
     """Hash function for source mac address and destination mac address.
-
     Args:
         frame (Frame): Network Frame object
-
     Returns:
         int: Returns integer between 1 and 256
     """
-    # convert from hex to int, and do an AND using 15 (0x0000ffff) to return
-    # a number that is the 4 least significant bits
-    src_mac = int(frame.src_mac, 16) & 15
-    dst_mac = int(frame.dst_mac, 16) & 15
-
-    hash_bin = src_mac ^ dst_mac
+    # convert to binary, strip '0b', and zero-pad
+    src_mac = bin(int(frame.src_mac, 16))[2:].zfill(16)
+    dst_mac = bin(int(frame.dst_mac, 16))[2:].zfill(16)
+    # take the last n (least significant) bits and concatenate
+    src_bin = bin(int(src_mac))[::2][-4:]
+    dst_bin = bin(int(dst_mac))[::2][-4:]
+    hash_bin = src_bin + dst_bin
     # convert to an integer from binary, and lets bump it up by one to start
     # like interface numbering. We don't start with interface 0, we start from 1.
-    return hash_bin + 1
+    return int(hash_bin, base=2) + 1
 
 
 @timeit
