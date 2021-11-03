@@ -56,7 +56,6 @@ def hash_src_dst_port_proto(frame: Frame):
     proto_num = frame.proto.value
     # Strip '0b' from the front of these binary representations, and then
     # take the last n (least significant) bits and concatenate
-    bin(int(frame.dst_mac, 16))[2:].zfill(16)
     src_bin = bin(int(src_port))[2:].zfill(10)
     dst_bin = bin(int(dst_port))[2:].zfill(10)
     proto_bin = bin(int(proto_num))[2:].zfill(10)[-4:]
