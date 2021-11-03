@@ -2,3 +2,4 @@ black
 pytest
 bandit
 flake8
+cython

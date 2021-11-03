@@ -6,7 +6,12 @@ side-project to explore hashing algorithms and Ethernet link load-balancing.
 
 ## Installation
 
-Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg.git && cd linkagg`
+1. Make sure you have gcc installed (Ubuntu): `sudo apt update && sudo apt install build-essential`
+2. Clone the repo and cd into the directory: `git clone https://github.com/clay584/linkagg.git && cd linkagg`
+3. Create a Python virtual environment: `python -m venv venv`
+4. Activate the Python virtual environment: `source venv/bin/activate`
+5. Install the Python dependencies: `pip install -r requirements-dev.txt`
+6. Compile the cythonized code: `python setup.py build_ext --inplace`
 
 ## Usage
 
