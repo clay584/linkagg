@@ -45,10 +45,10 @@ class Frame:
             self.dst_port = None
 
     def __str__(self):
-        return str(self.frame_tuple())
+        return str(self.flow_tuple())
 
     def __repr__(self):
-        return str(self.frame_tuple())
+        return str(self.flow_tuple())
 
     @staticmethod
     def gen_ip():
@@ -95,7 +95,7 @@ class Frame:
         protos = (1, 6, 17, 89)  # ICMP, TCP, UDP, OSPF respectively
         return Protocol(protos[random.randint(0, 3)])
 
-    def frame_tuple(self):
+    def flow_tuple(self):
         """Generate tuple for the frame.
 
         Returns:

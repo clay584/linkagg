@@ -10,7 +10,7 @@ def run(frames, egress_queues, num_supported, num_up_links):
         resulting_hash, time_took = hash_main(frame)
         total_time += time_took
         picked_queue = egress_intf_picker(num_up_links, num_supported, resulting_hash)
-        egress_queues[picked_queue].append(frame.frame_tuple())
+        egress_queues[picked_queue].append(frame.flow_tuple())
 
     # print queues
     print("One frame for every flow only. We should see a uniform distribution")
@@ -33,7 +33,7 @@ def run(frames, egress_queues, num_supported, num_up_links):
         resulting_hash, time_took = hash_main(frame)
         total_time += time_took
         picked_queue = egress_intf_picker(num_up_links, num_supported, resulting_hash)
-        egress_queues[picked_queue].append(frame.frame_tuple())
+        egress_queues[picked_queue].append(frame.flow_tuple())
 
     # print queues again
     print()
