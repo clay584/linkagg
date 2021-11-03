@@ -1,4 +1,24 @@
 from linkagg.frames import Frame, Protocol
+from functools import wraps
+import time
+
+
+def timeit(my_func):
+    @wraps(my_func)
+    def timed(*args, **kw):
+
+        tstart = time.time()
+        output = my_func(*args, **kw)
+        tend = time.time()
+
+        # print(
+        #     '"{}" took {:.3f} ms to execute\n'.format(
+        #         my_func.__name__, (tend - tstart) * 1000
+        #     )
+        # )
+        return output, (tend - tstart) * 1000
+
+    return timed
 
 
 def hash_src_dst_ip(frame: Frame):
@@ -66,6 +86,7 @@ def hash_src_dst_mac(frame: Frame):
     return hash_bin + 1
 
 
+@timeit
 def hash_main(frame):
     """Main hashing parent function. Depending on the higher level packet
     content, will decide which actual hash function will be executed.
