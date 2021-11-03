@@ -1,6 +1,7 @@
 from linkagg.frames import Frame, Protocol
 from functools import wraps
 import time
+import cython
 
 
 def timeit(my_func):
@@ -30,8 +31,15 @@ def hash_src_dst_ip(frame: Frame):
     Returns:
         int: Returns integer between 1 and 256
     """
+    cdef long src_ip, dst_ip
+    cdef int proto, keep
+
+    src_ip = int(frame.src_ip)
+    dst_ip = int(frame.dst_ip)
+    proto = frame.proto.value
+    keep = 255
     # Convert IPv4Address to int, take XOR and keep only the 8-most least significant bits
-    return (int(frame.src_ip) ^ int(frame.dst_ip) ^ frame.proto.value) & 255
+    return (src_ip ^ dst_ip ^ proto) & keep
 
 
 def hash_src_dst_port_proto(frame: Frame):
@@ -44,14 +52,23 @@ def hash_src_dst_port_proto(frame: Frame):
         int: Returns integer between 1 and 256
     """
 
+    cdef long src_ip, dst_ip, src_mac, dst_mac
+    cdef int proto, src_port, dst_port, keep
+
+    src_ip = int(frame.src_ip)
+    src_port = frame.src_port
+    dst_ip = int(frame.dst_ip)
+    dst_port = frame.dst_port
+    proto = frame.proto.value
+    keep = 255
     # Convert IPv4Address to int, take XOR everything and keep only the 8-most least significant bits
     return (
-        int(frame.src_ip)
-        ^ frame.src_port
-        ^ int(frame.dst_ip)
-        ^ frame.dst_port
-        ^ frame.proto.value
-    ) & 255
+        src_ip
+        ^ src_port
+        ^ dst_ip
+        ^ dst_port
+        ^ proto
+    ) & keep
 
 
 def hash_src_dst_mac(frame: Frame):
@@ -63,9 +80,14 @@ def hash_src_dst_mac(frame: Frame):
     Returns:
         int: Returns integer between 1 and 256
     """
+    cdef long src_mac, dst_mac
+    cdef int keep
 
+    src_mac = int(frame.src_mac, 16)
+    dst_mac = int(frame.dst_mac, 16)
+    keep = 255
     # Convert hex str to int, take XOR and keep only the 8-most least significant bits
-    return (int(frame.src_mac, 16) ^ int(frame.dst_mac, 16)) & 255
+    return (src_mac ^ dst_mac) & keep
 
 
 @timeit
