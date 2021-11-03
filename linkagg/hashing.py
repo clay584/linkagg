@@ -28,7 +28,7 @@ def hash_src_dst_ip(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     # Convert IPv4Address to int, take XOR and keep only the 8-most least significant bits
     return (int(frame.src_ip) ^ int(frame.dst_ip) ^ frame.proto.value) & 255
@@ -41,7 +41,7 @@ def hash_src_dst_port_proto(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
 
     # Convert IPv4Address to int, take XOR everything and keep only the 8-most least significant bits
@@ -61,7 +61,7 @@ def hash_src_dst_mac(frame: Frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
 
     # Convert hex str to int, take XOR and keep only the 8-most least significant bits
@@ -77,7 +77,7 @@ def hash_main(frame):
         frame (Frame): Network Frame object
 
     Returns:
-        int: Returns integer between 1 and 256
+        int: Returns integer between 0 and 255
     """
     if frame.proto == Protocol.ICMP:
         # src_ip,dst_ip
