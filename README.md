@@ -24,7 +24,7 @@ OR
 
 ## Example Output
 
-Running 10,000 frames through with an eight interface bundle.
+Running 8,000 frames through with an eight interface bundle.
 
 ```shell
 ❯ ./demo.py 8 8000
