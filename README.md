@@ -18,7 +18,7 @@ OR
 
 ## Example Output
 
-Running 10,000 frames through with an eight interface bundle.
+Running 8,000 frames through with an eight interface bundle.
 
 ```shell
 > python linkagg_hash/linkagg_hash.py 8 10000
